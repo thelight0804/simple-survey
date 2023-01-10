@@ -1,24 +1,34 @@
-import requests, os
+import requests, os, json
 
-def selectSurvey():
+def selectSurvey(url):
   """アンケートのtitleを出力して選択の数字を入力する
+
+      Args:
+      url (String): Google firebase Realtime Database URL
   """
-  res = requests.get('https://API.json')
-  cnt = 0
+  res = requests.get(url)
+  cnt = 0 # アンケートの数
 
-  print("------------[アンケート選択]------------")
-  for i in range(len(res.json()['servay'])):
-    print("title : ", res.json()['servay'][i]['title'])
-    print("番号 : ", res.json()['servay'][i]['id']+1)
-    cnt += 1
-    print("------------------------------------")
+    # 200成功する場合
+  if (res.status_code == 200):
+    print("===========[アンケート選択]===========")
+    for i in range(len(res.json()['servay'])):
+      print("title : ", res.json()['servay'][i]['title'])
+      print("番号 : ", res.json()['servay'][i]['id']+1)
+      cnt += 1
+      print("------------------------------------")
 
-  print("アンケートの番号を入力してください")
-  print("番号 : ", end="")
-  num = int(input()) - 1
-  vote(res, num)
-
-  # os.system("pause") #Press any key to continue
+    while(True):
+      print("アンケートの番号を入力してください")
+      print("番号 : ", end="")
+      num = int(input())
+      if (num < 1 or num > cnt):
+        pass
+      else:
+        break
+    return res, num - 1
+  else: # 200以外の場合
+    return -1
 
 
 def vote(res, i):
@@ -27,7 +37,11 @@ def vote(res, i):
   Args:
       res (Response): データベースのgetリクエスト
       i (int): 選択したアンケートのid
+
+  Returns:
+      voteData: 投票した内容
   """
+
   agree = res.json()['servay'][i]['agree']
   against = res.json()['servay'][i]['against']
   voter = res.json()['servay'][i]['voter']
@@ -39,27 +53,39 @@ def vote(res, i):
     num = int(input())
     if (num == 1):
       agree += 1
+      voter += 1
       break
     elif (num == 2):
       against += 1
+      voter += 1
       break
     else:
       print("1か2を入力してください。")
   
-  postVoid(agree, against, voter)
+  voteData = {"agree": agree, "against": against, "voter": voter}
   
-def postVoid(agree, against, voter):
+  return voteData
+  
+def postVoid(url, i, voteData):
   """投票の内容をデータベースに送信する
 
   Args:
-      agree (int): 賛成数
-      against (int): 反対数
-      voter (int): 投票者の数
+      url (String): Google firebase Realtime Database URL
+      i (int): 選択したアンケートのid
+      voteData (json): 投票した内容
   """
-  voter += 1
-  
-  print(agree, against, voter)
-  #TODO 투표 내용 post 하기
+  # 新しいアンケートデータに代わる
+  getRes = requests.get(url)
+  orgData = getRes.json()
+  orgData['servay'][i]['agree'] = voteData['agree']
+  orgData['servay'][i]['against'] = voteData['against']
+  orgData['servay'][i]['voter'] = voteData['voter']
 
+  # データベースに投票した内容を送信する
+  setRes = requests.put(url, data=json.dumps(orgData))
 
-selectSurvey()
+  # 200成功する場合
+  if (setRes.status_code == 200):
+    print("投票に成功しました。")
+  else: # 200以外の場合
+    print("投票にエラーが発生しました。\n(サーバーとのエラーが発生しました。)")
