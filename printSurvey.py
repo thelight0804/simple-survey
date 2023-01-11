@@ -28,6 +28,7 @@ def printResult(res, i):
       res (Response): データベースのgetリクエスト
       i (int): 選択したアンケートのid
   """
+  
   title = res.json()['servay'][i]['title']
 
   print(f'===========["{title}"回答]===========')

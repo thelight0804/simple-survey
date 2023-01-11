@@ -1,4 +1,4 @@
-import requests, json
+import requests, json, os
 
 def selectSurvey(url):
   """アンケートのtitleを出力して選択の数字を入力する
@@ -6,6 +6,7 @@ def selectSurvey(url):
       Args:
       url (String): Google firebase Realtime Database URL
   """
+
   res = requests.get(url)
   cnt = 0 # アンケートの数
 
@@ -14,7 +15,7 @@ def selectSurvey(url):
     print("===========[アンケート選択]===========")
     for i in range(len(res.json()['servay'])):
       print("title : ", res.json()['servay'][i]['title'])
-      print("番号 : ", res.json()['servay'][i]['id']+1)
+      print("番号 : ", cnt+1)
       cnt += 1
       print("------------------------------------")
 
