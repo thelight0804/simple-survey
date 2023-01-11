@@ -1,4 +1,4 @@
-import requests, os, json
+import requests, json
 
 def selectSurvey(url):
   """アンケートのtitleを出力して選択の数字を入力する
@@ -82,10 +82,10 @@ def postVoid(url, i, voteData):
   orgData['servay'][i]['voter'] = voteData['voter']
 
   # データベースに投票した内容を送信する
-  setRes = requests.put(url, data=json.dumps(orgData))
+  putRes = requests.put(url, data=json.dumps(orgData))
 
   # 200成功する場合
-  if (setRes.status_code == 200):
+  if (putRes.status_code == 200):
     print("投票に成功しました。")
   else: # 200以外の場合
     print("投票にエラーが発生しました。\n(サーバーとのエラーが発生しました。)")
