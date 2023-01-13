@@ -65,9 +65,8 @@ url = 'WebAPI'
 
 > Firebase Realtime Database (JSON)
 > 
-<div align="center">
-<img src="https://user-images.githubusercontent.com/69424845/212242342-af894bb9-9b6a-49b3-89ef-44ed5e7da5f9.jpg" height="70%" width="70%" />
-</div><br>
+<img src="https://user-images.githubusercontent.com/69424845/212242342-af894bb9-9b6a-49b3-89ef-44ed5e7da5f9.jpg" height="50%" width="50%" />
+<br>
 
 ### **プログラミング言語**
 
